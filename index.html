@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misky Misy - Nuestra Receta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta inspirada en repostería fina y Misky Misy */
+            --bg-color: #fff1f2;
+            --primary: #f43f5e; /* Rosa intenso */
+            --secondary: #fb7185; /* Rosa suave */
+            --accent: #be123c; /* Borgoña para contraste */
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(251, 113, 133, 0.2);
+            --text-main: #881337;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            /* Fondo con gradiente rosado suave */
+            background-image: radial-gradient(circle at top right, #ffe4e6, #fff1f2);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Blobs decorativos en tonos rosa pastel */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: float 8s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -5%; left: -5%; width: 250px; height: 250px; background: #fecdd3; }
+        .blob-2 { bottom: -5%; right: -5%; width: 300px; height: 300px; background: #fda4af; animation-delay: -4s; }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2rem 1.5rem;
+            width: 92vw;
+            max-width: 420px;
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(251, 113, 133, 0.15);
+            text-align: center;
+        }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 1.6rem; 
+            color: var(--accent); 
+            margin-bottom: 0.3rem;
+            font-style: italic;
+        }
+
+        p.subtitle { 
+            font-size: 0.8rem; 
+            color: #fb7185; 
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Contador con estilo más orgánico */
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-box {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 0.7rem 0;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .time-value { 
+            font-family: 'Fira Code', monospace; 
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            display: block;
+            color: var(--primary);
+        }
+
+        .time-label { 
+            font-size: 0.6rem; 
+            text-transform: uppercase; 
+            color: #9f1239;
+            font-weight: 700;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 15px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(244, 63, 94, 0.2);
+            margin-bottom: 10px;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        #message-area {
+            margin-top: 1.2rem;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 1rem;
+        }
+
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            font-weight: 400;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes float { 100% { transform: translate(15px, -15px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="glass-card">
+        <h1>Nuestra Receta Especial</h1>
+        <p class="subtitle">Horneándose desde el 18/09/2023</p>
+
+        <div class="counter-grid">
+            <div class="time-box"><span class="time-value" id="days">0</span><span class="time-label">Días</span></div>
+            <div class="time-box"><span class="time-value" id="hours">00</span><span class="time-label">Hrs</span></div>
+            <div class="time-box"><span class="time-value" id="minutes">00</span><span class="time-label">Min</span></div>
+            <div class="time-box"><span class="time-value" id="seconds">00</span><span class="time-label">Seg</span></div>
+        </div>
+
+        <button id="action-btn" onclick="revealNext()">Descubrir primer mes</button>
+        
+        <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
+
+        <div id="message-area">
+            <p id="message-display" class="message-text">Cada clic es un mes de nuestra historia juntos...</p>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:100;"></canvas>
+
+    <script>
+        // Fecha de inicio fija: 18 de Septiembre 2023
+        const startDate = new Date('2023-09-18T00:00:00').getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = now - startDate;
+            
+            document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24));
+            document.getElementById('hours').innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)).toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = Math.floor((diff % (1000*60*60)) / (1000*60)).toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = Math.floor((diff % (1000*60)) / 1000).toString().padStart(2, '0');
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        const phrases = [
+            "Mes 1: El primer hervor. Ese septiembre donde todo empezó a mezclarse dulcemente.",
+            "Mes 2: Como un buen merengue, nuestra confianza empezó a tomar cuerpo y firmeza.",
+            "Mes 3: El almíbar de tus besos se volvió mi ingrediente favorito cada mañana.",
+            "Mes 4: Nuestra primera Navidad juntos. El mejor regalo fue compartir el postre contigo.",
+            "Mes 5: Como masa madre, nuestra relación empezó a crecer de forma natural y constante.",
+            "Mes 6: Medio año horneando recuerdos. Eres el balance perfecto entre azúcar y sal.",
+            "Mes 7: Aprendi que el amor, como el chocolate temperado, requiere brillo y paciencia.",
+            "Mes 8: Eres la esencia de vainilla que perfuma todos mis días más grises.",
+            "Mes 9: Nueve meses tamizando los problemas para que solo quedara lo bueno entre nosotros.",
+            "Mes 10: Nuestra historia tiene el punto exacto de caramelo: dorado, dulce y resistente.",
+            "Mes 11: Como un bizcocho bien hecho, nuestra relación es esponjosa y llena de aire puro.",
+            "Mes 12: Un año completo. La base de nuestra tarta ya es sólida y está lista para más capas.",
+            "Mes 13: Empezamos el segundo año con el entusiasmo de quien abre un horno recién apagado.",
+            "Mes 14: Eres la cobertura de chocolate que me protege y me hace sentir completo.",
+            "Mes 15: Punto de nieve. Llegamos a una madurez donde nuestra unión es inquebrantable.",
+            "Mes 16: Como un buen maridaje, tú y yo combinamos en cada detalle, por distinto que sea.",
+            "Mes 17: Cada cita contigo es como una cata de postres finos: siempre descubro algo nuevo.",
+            "Mes 18: Año y medio. Nuestra receta ya es un clásico que no quiero dejar de cocinar.",
+            "Mes 19: Por esos días de 'baño maría', donde el calor suave de tu amor me rescató.",
+            "Mes 20: Eres el ganache que une todas las piezas sueltas de mi rompecabezas.",
+            "Mes 21: Nuestra risa es el decorado perfecto para cualquier día que parezca amargo.",
+            "Mes 22: Como una masa que reposa, aprendimos que el tiempo es nuestro mejor aliado.",
+            "Mes 23: Eres la ralladura de limón: ese toque fresco que me despierta y me hace feliz.",
+            "Mes 24: Dos años. Hemos perfeccionado la técnica de querernos sin condiciones.",
+            "Mes 25: Un nuevo ciclo. Eres el aroma a pan recién horneado que me hace sentir en casa.",
+            "Mes 26: Gracias por traer toda la dulzura de 'Misky Misy' a nuestra historia; eres el detalle más tierno de mi vida.",
+            "Mes 27: Nuestra paciencia es como el hojaldre: muchas capas que juntas crean algo increíble.",
+            "Mes 28: Eres el postre que siempre elijo, sin importar cuántas opciones tenga la vida.",
+            "Mes 29: Casi 30 meses y mi corazón sigue batiendo a 100 por hora cuando te veo.",
+            "Mes 30: Hoy. La receta sigue abierta, porque quiero seguir horneando la vida a tu lado."
+        ];
+
+        let index = 0;
+        const btn = document.getElementById('action-btn');
+        const display = document.getElementById('message-display');
+        const progress = document.getElementById('progress');
+
+        function revealNext() {
+            if (index < phrases.length) {
+                display.innerHTML = `<p class="message-text">${phrases[index]}</p>`;
+                index++;
+                progress.style.width = (index / phrases.length * 100) + "%";
+                
+                if (index < phrases.length) {
+                    btn.innerText = `Próximo mes [${index + 1}/30]`;
+                } else {
+                    btn.innerText = "❤️ ¡Feliz Aniversario, mi repostera favorita! ❤️";
+                    btn.disabled = true;
+                    btn.style.background = "linear-gradient(135deg, #10b981, #34d399)";
+                    fireConfetti();
+                }
+            }
+        }
+
+        function fireConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const particles = [];
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 7 + 3,
+                    color: ['#fb7185', '#f43f5e', '#ffffff', '#fbcfe8'][Math.floor(Math.random()*4)],
+                    speed: Math.random() * 2 + 3,
+                    angle: Math.random() * 360
+                });
+            }
+            function anim() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                particles.forEach(p => {
+                    p.y += p.speed;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                    if(p.y > canvas.height) p.y = -10;
+                });
+                requestAnimationFrame(anim);
+            }
+            anim();
+        }
+    </script>
+</body>
+</html>
