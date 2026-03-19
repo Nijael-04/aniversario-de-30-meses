@@ -7,11 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Paleta inspirada en repostería fina y Misky Misy */
             --bg-color: #fff1f2;
-            --primary: #f43f5e; /* Rosa intenso */
-            --secondary: #fb7185; /* Rosa suave */
-            --accent: #be123c; /* Borgoña para contraste */
+            --primary: #f43f5e;
+            --secondary: #fb7185;
+            --accent: #be123c;
             --glass-bg: rgba(255, 255, 255, 0.6);
             --glass-border: rgba(251, 113, 133, 0.2);
             --text-main: #881337;
@@ -21,7 +20,6 @@
 
         body {
             background-color: var(--bg-color);
-            /* Fondo con gradiente rosado suave */
             background-image: radial-gradient(circle at top right, #ffe4e6, #fff1f2);
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
@@ -33,7 +31,6 @@
             position: relative;
         }
 
-        /* Blobs decorativos en tonos rosa pastel */
         .blob {
             position: absolute;
             border-radius: 50%;
@@ -57,6 +54,7 @@
             z-index: 10;
             box-shadow: 0 20px 40px rgba(251, 113, 133, 0.15);
             text-align: center;
+            transition: all 0.5s ease;
         }
 
         h1 { 
@@ -72,10 +70,8 @@
             color: #fb7185; 
             margin-bottom: 1.5rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        /* Contador con estilo más orgánico */
         .counter-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -88,7 +84,6 @@
             border-radius: 15px;
             padding: 0.7rem 0;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
 
         .time-value { 
@@ -122,8 +117,6 @@
             margin-bottom: 10px;
         }
 
-        button:active { transform: scale(0.98); }
-
         #message-area {
             margin-top: 1.2rem;
             min-height: 120px;
@@ -139,8 +132,20 @@
             font-size: 0.95rem;
             line-height: 1.5;
             color: var(--text-main);
-            font-weight: 400;
             animation: fadeIn 0.5s ease-out;
+        }
+
+        .doubt-box {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px dashed var(--primary);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            font-style: italic;
+            color: var(--accent);
+            animation: fadeIn 1s ease-in;
         }
 
         .progress-bar {
@@ -154,7 +159,7 @@
             height: 100%;
             background: var(--primary);
             width: 0%;
-            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: width 0.4s ease;
         }
 
         @keyframes float { 100% { transform: translate(15px, -15px); } }
@@ -166,7 +171,7 @@
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 
-    <div class="glass-card">
+    <div class="glass-card" id="main-card">
         <h1>Nuestra Receta Especial</h1>
         <p class="subtitle">Horneándose desde el 18/09/2023</p>
 
@@ -183,19 +188,20 @@
 
         <div id="message-area">
             <p id="message-display" class="message-text">Cada clic es un mes de nuestra historia juntos...</p>
+            <div id="doubt-message" class="doubt-box">
+                "Nota del autor: Ayer a las 9 PM, sentí que el horno se enfriaba un poco. Sé que hay dudas en la receta ahora mismo, pero los mejores postres a veces necesitan un tiempo extra de reposo para no hundirse. Estoy aquí para ajustar la temperatura contigo."
+            </div>
         </div>
     </div>
 
     <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:100;"></canvas>
 
     <script>
-        // Fecha de inicio fija: 18 de Septiembre 2023
         const startDate = new Date('2023-09-18T00:00:00').getTime();
 
         function updateTimer() {
             const now = new Date().getTime();
             const diff = now - startDate;
-            
             document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24));
             document.getElementById('hours').innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)).toString().padStart(2, '0');
             document.getElementById('minutes').innerText = Math.floor((diff % (1000*60*60)) / (1000*60)).toString().padStart(2, '0');
@@ -211,7 +217,7 @@
             "Mes 4: Nuestra primera Navidad juntos. El mejor regalo fue compartir el postre contigo.",
             "Mes 5: Como masa madre, nuestra relación empezó a crecer de forma natural y constante.",
             "Mes 6: Medio año horneando recuerdos. Eres el balance perfecto entre azúcar y sal.",
-            "Mes 7: Aprendi que el amor, como el chocolate temperado, requiere brillo y paciencia.",
+            "Mes 7: Aprendí que el amor, como el chocolate temperado, requiere brillo y paciencia.",
             "Mes 8: Eres la esencia de vainilla que perfuma todos mis días más grises.",
             "Mes 9: Nueve meses tamizando los problemas para que solo quedara lo bueno entre nosotros.",
             "Mes 10: Nuestra historia tiene el punto exacto de caramelo: dorado, dulce y resistente.",
@@ -241,6 +247,7 @@
         const btn = document.getElementById('action-btn');
         const display = document.getElementById('message-display');
         const progress = document.getElementById('progress');
+        const doubtBox = document.getElementById('doubt-message');
 
         function revealNext() {
             if (index < phrases.length) {
@@ -251,9 +258,10 @@
                 if (index < phrases.length) {
                     btn.innerText = `Próximo mes [${index + 1}/30]`;
                 } else {
-                    btn.innerText = "❤️ ¡Feliz Aniversario, mi repostera favorita! ❤️";
+                    btn.innerText = "❤️ ¡Feliz Aniversario! ❤️";
                     btn.disabled = true;
                     btn.style.background = "linear-gradient(135deg, #10b981, #34d399)";
+                    doubtBox.style.display = "block"; // Revelar el mensaje de duda al final
                     fireConfetti();
                 }
             }
