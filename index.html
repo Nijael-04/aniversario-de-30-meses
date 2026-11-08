@@ -133,22 +133,11 @@
             line-height: 1.5;
             color: var(--text-main);
             animation: fadeIn 0.5s ease-out;
-        }
-
-        .doubt-box {
-            display: none;
-            margin-top: 1rem;
-            padding: 1rem;
-            border: 1px dashed var(--primary);
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.4);
-            font-size: 0.85rem;
-            font-style: italic;
-            color: var(--accent);
-            animation: fadeIn 1s ease-in;
+            white-space: pre-line;
         }
 
         .progress-bar {
+            display: none;
             height: 6px;
             background: rgba(0,0,0,0.05);
             border-radius: 10px;
@@ -173,7 +162,7 @@
 
     <div class="glass-card" id="main-card">
         <h1>Nuestra Receta Especial</h1>
-        <p class="subtitle">Horneándose desde el 18/09/2023</p>
+        <p class="subtitle">Del 18/09/2023 al 07/11/2026</p>
 
         <div class="counter-grid">
             <div class="time-box"><span class="time-value" id="days">0</span><span class="time-label">Días</span></div>
@@ -182,33 +171,29 @@
             <div class="time-box"><span class="time-value" id="seconds">00</span><span class="time-label">Seg</span></div>
         </div>
 
-        <button id="action-btn" onclick="revealNext()">Descubrir primer mes</button>
+        <button id="action-btn" onclick="revealNext()">Ver nuestro recorrido</button>
         
         <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
 
         <div id="message-area">
-            <p id="message-display" class="message-text">Cada clic es un mes de nuestra historia juntos...</p>
-            <div id="doubt-message" class="doubt-box">
-                "Nota del autor: Ayer a las 9 PM, sentí que el horno se enfriaba un poco. Sé que hay dudas en la receta ahora mismo, pero los mejores postres a veces necesitan un tiempo extra de reposo para no hundirse. Estoy aquí para ajustar la temperatura contigo."
-            </div>
+            <p id="message-display" class="message-text">Perdón por el mensaje que envié aquel día. No sabía lo alegre que estabas y reaccioné por impulso; aun así, debí pensar antes de enviarlo. También te pido disculpas por haber sido tan &quot;asfixiante&quot;.
+
+Lamento que nuestra receta no haya salido como yo esperaba. Espero que puedas recuperar lo que te quité. Te amo.</p>
         </div>
     </div>
 
-    <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:100;"></canvas>
-
     <script>
-        const startDate = new Date('2023-09-18T00:00:00').getTime();
+        const startDate = new Date('2023-09-18T00:00:00-05:00').getTime();
+        const endDate = new Date('2026-11-07T20:00:00-05:00').getTime();
 
-        function updateTimer() {
-            const now = new Date().getTime();
-            const diff = now - startDate;
-            document.getElementById('days').innerText = Math.floor(diff / (1000*60*60*24));
-            document.getElementById('hours').innerText = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)).toString().padStart(2, '0');
-            document.getElementById('minutes').innerText = Math.floor((diff % (1000*60*60)) / (1000*60)).toString().padStart(2, '0');
-            document.getElementById('seconds').innerText = Math.floor((diff % (1000*60)) / 1000).toString().padStart(2, '0');
+        function showFinalTime() {
+            const diff = endDate - startDate;
+            document.getElementById('days').textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hours').textContent = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
         }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        showFinalTime();
 
         const phrases = [
             "Mes 1: El primer hervor. Ese septiembre donde todo empezó a mezclarse dulcemente.",
@@ -243,57 +228,30 @@
             "Mes 30: Hoy. La receta sigue abierta, porque quiero seguir horneando la vida a tu lado."
         ];
 
+        const finalMessage = "Perdón por el mensaje que envié aquel día. No sabía lo alegre que estabas y reaccioné por impulso; aun así, debí pensar antes de enviarlo. También te pido disculpas por haber sido tan \"asfixiante\".\n\nLamento que nuestra receta no haya salido como yo esperaba. Espero que puedas recuperar lo que te quité. Te amo.";
         let index = 0;
         const btn = document.getElementById('action-btn');
         const display = document.getElementById('message-display');
         const progress = document.getElementById('progress');
-        const doubtBox = document.getElementById('doubt-message');
+        const progressBar = document.querySelector('.progress-bar');
 
         function revealNext() {
-            if (index < phrases.length) {
-                display.innerHTML = `<p class="message-text">${phrases[index]}</p>`;
-                index++;
-                progress.style.width = (index / phrases.length * 100) + "%";
-                
-                if (index < phrases.length) {
-                    btn.innerText = `Próximo mes [${index + 1}/30]`;
-                } else {
-                    btn.innerText = "❤️ ¡Feliz Aniversario! ❤️";
-                    btn.disabled = true;
-                    btn.style.background = "linear-gradient(135deg, #10b981, #34d399)";
-                    doubtBox.style.display = "block"; // Revelar el mensaje de duda al final
-                    fireConfetti();
-                }
+            if (index === phrases.length) {
+                index = 0;
+                display.textContent = finalMessage;
+                progress.style.width = '0%';
+                progressBar.style.display = 'none';
+                btn.textContent = 'Ver nuestro recorrido';
+                return;
             }
-        }
 
-        function fireConfetti() {
-            const canvas = document.getElementById('confetti-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const particles = [];
-            for (let i = 0; i < 150; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height - canvas.height,
-                    size: Math.random() * 7 + 3,
-                    color: ['#fb7185', '#f43f5e', '#ffffff', '#fbcfe8'][Math.floor(Math.random()*4)],
-                    speed: Math.random() * 2 + 3,
-                    angle: Math.random() * 360
-                });
-            }
-            function anim() {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                particles.forEach(p => {
-                    p.y += p.speed;
-                    ctx.fillStyle = p.color;
-                    ctx.fillRect(p.x, p.y, p.size, p.size);
-                    if(p.y > canvas.height) p.y = -10;
-                });
-                requestAnimationFrame(anim);
-            }
-            anim();
+            progressBar.style.display = 'block';
+            display.textContent = phrases[index];
+            index++;
+            progress.style.width = (index / phrases.length * 100) + '%';
+            btn.textContent = index < phrases.length
+                ? `Próximo mes [${index + 1}/${phrases.length}]`
+                : 'Volver al mensaje final';
         }
     </script>
 </body>
